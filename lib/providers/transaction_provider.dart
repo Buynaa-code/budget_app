@@ -62,6 +62,13 @@ class TransactionProvider with ChangeNotifier {
       // Update balance
       await _updateBalance(transaction, true);
 
+      // Update local transactions list immediately for UI responsiveness
+      if (_transactions == null) {
+        _transactions = [];
+      }
+      _transactions!.add(transaction);
+      notifyListeners();
+
       // Provide user feedback
       print('Transaction added successfully');
     } catch (e) {

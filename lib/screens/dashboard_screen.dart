@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/balance_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../app/app_localizations.dart';
+import '../widgets/success_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -46,6 +47,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showTransactionDialog(BuildContext context, bool isIncome) {
+    // Clear controllers before showing the dialog
+    _amountController.clear();
+    _descriptionController.clear();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -159,8 +164,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _descriptionController.clear();
 
                         // Show success message and dialog
-                        if (dialogContext.mounted) {
-                          Navigator.pop(dialogContext);
+                        if (context.mounted) {
+                          Navigator.pop(context);
                           _showSuccessDialog(context, isIncome, amount);
                         }
                       } catch (e) {
@@ -198,80 +203,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showSuccessDialog(BuildContext context, bool isIncome, double amount) {
-    showDialog(
+    SuccessDialogWidget.show(
       context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF2A2B2E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isIncome ? Colors.green : Colors.blue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isIncome ? Icons.check_circle : Icons.check_circle,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  isIncome
-                      ? 'Орлого амжилттай нэмэгдлээ!'
-                      : 'Зарлага амжилттай нэмэгдлээ!',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  '${isIncome ? '+' : '-'}${amount.toStringAsFixed(0)}₮',
-                  style: TextStyle(
-                    color: isIncome ? Colors.green : Colors.blue,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isIncome ? Colors.green : Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Ойлголоо',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+      title: 'Амжилттай нэмэгдлээ!',
+      message:
+          'Таны ${amount.toStringAsFixed(0)}₮ ${isIncome ? 'орлого' : 'зарлага'} амжилттай нэмэгдлээ',
+      buttonText: 'OK',
+      accentColor: isIncome ? Colors.green : Colors.blue,
+      onButtonPressed: () {
+        // No need to do anything here as the dialog will handle its own dismissal
       },
+      icon: Icons.rocket_launch,
     );
   }
 
@@ -279,7 +221,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF446CEF), Color(0xFF000000)],
             begin: Alignment.topCenter,
@@ -630,7 +572,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Color(0xFF446CEF),
+        backgroundColor: const Color(0xFF446CEF),
         elevation: 0,
         title: const Text(
           'BB',

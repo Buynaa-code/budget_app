@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/locale_provider.dart';
 import '../app/app_localizations.dart';
 import 'dashboard_screen.dart';
 import 'transaction_screen.dart';
