@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart';
-import 'your_user_model.dart'; // Import your user model
 
 import 'package:budget_app/services/database_service.dart';
+import 'package:budget_app/providers/auth_provider.dart' as app_auth;
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -24,7 +23,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     // Initialize form data with user data
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider =
+        Provider.of<app_auth.AuthProvider>(context, listen: false);
     final user = authProvider.userModel;
     if (user != null) {
       _name = user.name ?? '';
@@ -43,7 +43,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       _formKey.currentState!.save();
 
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final authProvider =
+          Provider.of<app_auth.AuthProvider>(context, listen: false);
       if (authProvider.user != null && authProvider.userModel != null) {
         final userModel = authProvider.userModel!;
 

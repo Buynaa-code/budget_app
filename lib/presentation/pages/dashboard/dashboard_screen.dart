@@ -1308,7 +1308,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             onPressed: () {
                               Navigator.pop(context);
                               final provider = context.read<TransactionBloc>();
-                              provider.add(DeleteTransaction(transaction));
+                              provider.add(DeleteTransaction(transaction.id));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -1432,7 +1432,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return confirm;
           },
           onDismissed: (direction) {
-            context.read<TransactionBloc>().add(DeleteTransaction(transaction));
+            context
+                .read<TransactionBloc>()
+                .add(DeleteTransaction(transaction.id));
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

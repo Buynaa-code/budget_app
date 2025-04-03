@@ -10,7 +10,9 @@ import 'core/theme/app_theme.dart';
 import 'di/injection_container.dart' as di;
 import 'core/utils/database_initializer.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
-import 'package:flutter/foundation.dart';
+import 'providers/auth_provider.dart' as app_auth;
+import 'providers/balance_provider.dart';
+import 'providers/transaction_provider.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -48,9 +50,10 @@ class MyApp extends StatelessWidget {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
-          ChangeNotifierProvider(create: (_) => BalanceProvider()),
-          ChangeNotifierProvider(create: (_) => TransactionProvider()),
+          Provider<app_auth.AuthProvider>(
+              create: (_) => app_auth.AuthProvider()),
+          Provider<BalanceProvider>(create: (_) => BalanceProvider()),
+          Provider<TransactionProvider>(create: (_) => TransactionProvider()),
         ],
         child: Consumer<LocaleProvider>(builder: (context, localeProvider, _) {
           return MaterialApp(
@@ -74,16 +77,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-class AuthProvider extends ChangeNotifier {
-  // Your implementation here
-}
-
-class BalanceProvider extends ChangeNotifier {
-  // Your implementation here
-}
-
-class TransactionProvider extends ChangeNotifier {
-  // Your implementation here
 }

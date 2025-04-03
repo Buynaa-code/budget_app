@@ -2,9 +2,11 @@ import '../../domain/entities/transaction_entity.dart';
 
 /// Data model class for Transaction entity with serialization methods.
 class TransactionModel extends TransactionEntity {
+  final String? userId;
+
   TransactionModel({
     required String id,
-    required String userId,
+    this.userId,
     required String title,
     required double amount,
     required DateTime date,
@@ -12,7 +14,6 @@ class TransactionModel extends TransactionEntity {
     required String category,
   }) : super(
           id: id,
-          userId: userId,
           title: title,
           amount: amount,
           date: date,
@@ -24,7 +25,7 @@ class TransactionModel extends TransactionEntity {
   factory TransactionModel.fromMap(Map<String, dynamic> map) {
     return TransactionModel(
       id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
+      userId: map['userId'],
       title: map['title'] ?? '',
       amount: map['amount']?.toDouble() ?? 0.0,
       date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
