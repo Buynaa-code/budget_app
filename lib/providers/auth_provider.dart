@@ -1,98 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart';
-import '../services/auth_service.dart';
-import '../services/database_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
   UserModel? _userModel;
   bool _isLoading = false;
-  bool _isAuthenticated = false;
-  String? _userId;
-  String? _userEmail;
 
+  User? get user => _user;
   UserModel? get userModel => _userModel;
   bool get isLoading => _isLoading;
-  bool get isAuthenticated => _isAuthenticated;
-  String? get userId => _userId;
-  String? get userEmail => _userEmail;
-  User? get user => _authService.currentUser;
-
-  void setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
 
   Future<void> login(String email, String password) async {
     try {
-      setLoading(true);
+      _isLoading = true;
       notifyListeners();
 
-      // TODO: Implement actual authentication
-      // For now, using mock implementation
-      await Future.delayed(const Duration(seconds: 2));
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      if (email == "test@example.com" && password == "password") {
-        _isAuthenticated = true;
-        _userId = "user123";
-        _userEmail = email;
-      } else {
-        throw Exception("Invalid credentials");
-      }
+      _user = userCredential.user;
+      await refreshUserData();
     } catch (e) {
-      _isAuthenticated = false;
-      _userId = null;
-      _userEmail = null;
       rethrow;
     } finally {
-      setLoading(false);
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> register(String email, String password, String? name) async {
-    setLoading(true);
+  Future<void> register(
+      String email, String password, String name, String phone) async {
     try {
-      UserCredential userCredential =
-          await _authService.register(email, password);
-      if (userCredential.user != null) {
-        _userModel = UserModel(
-          uid: userCredential.user!.uid,
-          email: userCredential.user!.email ?? '',
-          name: name,
-        );
+      _isLoading = true;
+      notifyListeners();
 
-        // Save user data
-        await DatabaseService(uid: userCredential.user!.uid).saveUserData(
-          userCredential.user!.email ?? '',
-          name,
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      _user = userCredential.user;
+      if (_user != null) {
+        _userModel = UserModel(
+          uid: _user!.uid,
+          email: email,
+          name: name,
+          phone: phone,
         );
       }
-      notifyListeners();
     } catch (e) {
       rethrow;
     } finally {
-      setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> signOut() async {
-    setLoading(true);
-    try {
-      await _authService.signOut();
-      _userModel = null;
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    } finally {
-      setLoading(false);
-    }
+    await _auth.signOut();
+    _user = null;
+    _userModel = null;
+    notifyListeners();
   }
 
-  void logout() {
-    _isAuthenticated = false;
-    _userId = null;
-    _userEmail = null;
+  Future<void> refreshUserData() async {
+    _user = _auth.currentUser;
+    if (_user != null) {
+      // TODO: Fetch user data from database
+      _userModel = UserModel(
+        uid: _user!.uid,
+        email: _user!.email ?? '',
+      );
+    }
     notifyListeners();
+  }
+
+  Future<bool> updateProfileImage(String imagePath) async {
+    try {
+      // TODO: Implement profile image update
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

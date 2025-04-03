@@ -1,47 +1,70 @@
-enum TransactionType { income, expense }
+import 'package:uuid/uuid.dart';
+
+enum TransactionType {
+  income,
+  expense,
+}
 
 class TransactionModel {
   final String id;
-  final String userId;
   final String title;
   final double amount;
   final DateTime date;
-  final TransactionType type;
+  final String type;
   final String category;
+  final String? description;
 
   TransactionModel({
-    required this.id,
-    required this.userId,
+    String? id,
     required this.title,
     required this.amount,
     required this.date,
     required this.type,
     required this.category,
-  });
-
-  factory TransactionModel.fromMap(Map<String, dynamic> map) {
-    return TransactionModel(
-      id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
-      title: map['title'] ?? '',
-      amount: map['amount']?.toDouble() ?? 0.0,
-      date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
-      type: map['type'] == 'income'
-          ? TransactionType.income
-          : TransactionType.expense,
-      category: map['category'] ?? '',
-    );
-  }
+    this.description,
+  }) : id = id ?? const Uuid().v4();
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'userId': userId,
       'title': title,
       'amount': amount,
       'date': date.toIso8601String(),
-      'type': type == TransactionType.income ? 'income' : 'expense',
+      'type': type,
       'category': category,
+      'description': description,
     };
+  }
+
+  factory TransactionModel.fromMap(Map<String, dynamic> map) {
+    return TransactionModel(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      amount: map['amount'] as double,
+      date: DateTime.parse(map['date'] as String),
+      type: map['type'] as String,
+      category: map['category'] as String,
+      description: map['description'],
+    );
+  }
+
+  TransactionModel copyWith({
+    String? id,
+    String? title,
+    double? amount,
+    DateTime? date,
+    String? type,
+    String? category,
+    String? description,
+  }) {
+    return TransactionModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      category: category ?? this.category,
+      description: description ?? this.description,
+    );
   }
 }
