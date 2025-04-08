@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:budget_app/providers/auth_provider.dart';
 import 'package:budget_app/providers/transaction_provider.dart';
-import 'package:budget_app/core/localization/app_localizations.dart';
 import 'package:budget_app/models/transaction.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -23,9 +22,9 @@ class _TransactionScreenState extends State<TransactionScreen>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      if (authProvider.user != null) {
+      if (authProvider.userModel != null) {
         Provider.of<TransactionProvider>(context, listen: false)
-            .init(authProvider.user!.uid);
+            .init(authProvider.userModel!.uid);
       }
     });
   }

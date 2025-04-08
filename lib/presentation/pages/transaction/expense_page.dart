@@ -4,7 +4,6 @@ import 'package:budget_app/models/transaction.dart';
 import 'package:budget_app/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:budget_app/presentation/bloc/transaction/transaction_event.dart';
 import 'package:budget_app/presentation/bloc/transaction/transaction_state.dart';
-import 'package:budget_app/core/localization/app_localizations.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -82,11 +81,11 @@ class _ExpensePageState extends State<ExpensePage> {
                 end: Alignment.bottomCenter,
               ),
               borderRadius: BorderRadius.circular(24),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 10,
-                  offset: const Offset(0, 5),
+                  offset: Offset(0, 5),
                 ),
               ],
             ),

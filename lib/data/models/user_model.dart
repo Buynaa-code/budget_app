@@ -2,7 +2,7 @@ import '../../domain/entities/user_entity.dart';
 
 /// Data model class for User entity with serialization methods.
 class UserModel extends UserEntity {
-  UserModel({
+  const UserModel({
     required String uid,
     required String email,
     String? name,

@@ -365,7 +365,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: Consumer<AuthProvider>(
                             builder: (context, authProvider, _) =>
                                 ElevatedButton(
-                              onPressed: authProvider?.isLoading ?? false
+                              onPressed: authProvider.isLoading ?? false
                                   ? null
                                   : () async {
                                       if (_formKey.currentState!.validate()) {
@@ -407,7 +407,7 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               child: Ink(
                                 decoration: BoxDecoration(
-                                  gradient: authProvider?.isLoading ?? false
+                                  gradient: authProvider.isLoading ?? false
                                       ? LinearGradient(
                                           colors: [
                                             Colors.grey[400]!,

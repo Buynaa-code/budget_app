@@ -1,235 +1,164 @@
-import 'dart:async';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+// import 'dart:async';
+// import 'package:sqflite/sqflite.dart';
+// import 'package:path/path.dart';
 import '../models/transaction.dart';
 import '../models/balance.dart';
 import '../models/user.dart';
 
+// Mock database class
+class Database {
+  Future<int> insert(String table, Map<String, dynamic> values) async {
+    return 1; // Mock successful insert with ID 1
+  }
+
+  Future<List<Map<String, dynamic>>> query(
+    String table, {
+    String? where,
+    List<dynamic>? whereArgs,
+    String? orderBy,
+    int? limit,
+  }) async {
+    return []; // Return empty list
+  }
+
+  Future<int> update(
+    String table,
+    Map<String, dynamic> values, {
+    String? where,
+    List<dynamic>? whereArgs,
+  }) async {
+    return 1; // Mock successful update affecting 1 row
+  }
+
+  Future<int> delete(
+    String table, {
+    String? where,
+    List<dynamic>? whereArgs,
+  }) async {
+    return 1; // Mock successful delete affecting 1 row
+  }
+
+  Future<List<Map<String, dynamic>>> rawQuery(
+    String sql, [
+    List<dynamic>? arguments,
+  ]) async {
+    return [
+      {'total': 0.0}
+    ]; // Mock query result with 0 total
+  }
+
+  Future<void> execute(String sql, [List<dynamic>? arguments]) async {
+    // Mock execute - do nothing
+  }
+}
+
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
-  static Database? _database;
+  Database? _database;
 
   DatabaseHelper._init();
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDB('budget_app.db');
+    _database ??= await _initDB('budget_app.db');
     return _database!;
   }
 
   Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
-
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDB,
-    );
+    // Return mock database
+    return Database();
   }
 
   Future<void> _createDB(Database db, int version) async {
-    // Create users table
-    await db.execute('''
-      CREATE TABLE users (
-        uid TEXT PRIMARY KEY,
-        email TEXT NOT NULL,
-        name TEXT,
-        phone TEXT,
-        photoUrl TEXT,
-        createdAt TEXT NOT NULL
-      )
-    ''');
-
-    // Create balances table
-    await db.execute('''
-      CREATE TABLE balances (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId TEXT NOT NULL,
-        totalBalance REAL NOT NULL,
-        availableBalance REAL NOT NULL,
-        income REAL NOT NULL,
-        expense REAL NOT NULL,
-        updatedAt TEXT NOT NULL,
-        FOREIGN KEY (userId) REFERENCES users (uid)
-      )
-    ''');
-
-    // Create transactions table
-    await db.execute('''
-      CREATE TABLE transactions (
-        id TEXT PRIMARY KEY,
-        userId TEXT NOT NULL,
-        title TEXT NOT NULL,
-        amount REAL NOT NULL,
-        date TEXT NOT NULL,
-        type TEXT NOT NULL,
-        category TEXT NOT NULL,
-        FOREIGN KEY (userId) REFERENCES users (uid)
-      )
-    ''');
+    // Mock implementation - do nothing
   }
 
   // User operations
   Future<int> createUser(UserModel user) async {
-    final db = await database;
-    return await db.insert('users', user.toMap());
+    return 1; // Mock successful insert
   }
 
   Future<UserModel?> getUser(String uid) async {
-    final db = await database;
-    final maps = await db.query(
-      'users',
-      where: 'uid = ?',
-      whereArgs: [uid],
+    // Return mock user
+    return UserModel(
+      uid: 'mock-user-id',
+      email: 'test@example.com',
+      name: 'Test User',
+      phone: '1234567890',
     );
-
-    if (maps.isNotEmpty) {
-      return UserModel.fromMap(maps.first);
-    }
-    return null;
   }
 
   Future<int> updateUser(UserModel user) async {
-    final db = await database;
-    return await db.update(
-      'users',
-      user.toMap(),
-      where: 'uid = ?',
-      whereArgs: [user.uid],
-    );
+    return 1; // Mock successful update
   }
 
   Future<int> deleteUser(String uid) async {
-    final db = await database;
-    // Delete related balances and transactions first
-    await db.delete('balances', where: 'userId = ?', whereArgs: [uid]);
-    await db.delete('transactions', where: 'userId = ?', whereArgs: [uid]);
-    return await db.delete('users', where: 'uid = ?', whereArgs: [uid]);
+    return 1; // Mock successful delete
   }
 
   // Balance operations
   Future<int> createBalance(BalanceModel balance) async {
-    final db = await database;
-    final map = balance.toMap();
-    map['updatedAt'] = DateTime.now().toIso8601String();
-    return await db.insert('balances', map);
+    return 1; // Mock successful insert
   }
 
   Future<BalanceModel?> getBalance(String userId) async {
-    final db = await database;
-    final maps = await db.query(
-      'balances',
-      where: 'userId = ?',
-      whereArgs: [userId],
-      orderBy: 'updatedAt DESC',
-      limit: 1,
+    // Return mock balance
+    return BalanceModel(
+      id: 1,
+      userId: userId,
+      totalBalance: 1000.0,
+      availableBalance: 800.0,
+      income: 1500.0,
+      expense: 700.0,
     );
-
-    if (maps.isNotEmpty) {
-      return BalanceModel.fromMap(maps.first);
-    }
-    return null;
   }
 
   Future<int> updateBalance(BalanceModel balance) async {
-    final db = await database;
-    final map = balance.toMap();
-    map['updatedAt'] = DateTime.now().toIso8601String();
-
-    // Check if balance exists
-    final existingBalance = await getBalance(balance.userId);
-    if (existingBalance != null) {
-      return await db.update(
-        'balances',
-        map,
-        where: 'userId = ?',
-        whereArgs: [balance.userId],
-      );
-    } else {
-      return await createBalance(balance);
-    }
+    return 1; // Mock successful update
   }
 
   // Transaction operations
   Future<int> createTransaction(TransactionModel transaction) async {
-    final db = await database;
-    return await db.insert('transactions', transaction.toMap());
+    return 1; // Mock successful insert
   }
 
   Future<List<TransactionModel>> getTransactions(String userId) async {
-    final db = await database;
-    final maps = await db.query(
-      'transactions',
-      where: 'userId = ?',
-      whereArgs: [userId],
-      orderBy: 'date DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return TransactionModel.fromMap(maps[i]);
-    });
+    // Return mock transactions
+    return [
+      TransactionModel(
+        id: '1',
+        title: 'Salary',
+        amount: 1500.0,
+        date: DateTime.now(),
+        type: 'income',
+        category: 'Income',
+      ),
+      TransactionModel(
+        id: '2',
+        title: 'Groceries',
+        amount: 200.0,
+        date: DateTime.now().subtract(const Duration(days: 1)),
+        type: 'expense',
+        category: 'Food',
+      ),
+    ];
   }
 
   Future<int> updateTransaction(TransactionModel transaction) async {
-    final db = await database;
-    return await db.update(
-      'transactions',
-      transaction.toMap(),
-      where: 'id = ?',
-      whereArgs: [transaction.id],
-    );
+    return 1; // Mock successful update
   }
 
   Future<int> deleteTransaction(String id) async {
-    final db = await database;
-    return await db.delete(
-      'transactions',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return 1; // Mock successful delete
   }
 
   // Transaction statistics
   Future<Map<String, double>> getTransactionStats(String userId) async {
-    final db = await database;
-    final now = DateTime.now();
-    final currentMonth = DateTime(now.year, now.month, 1).toIso8601String();
-    final nextMonth = DateTime(now.year, now.month + 1, 1).toIso8601String();
-
-    // Get this month's income
-    final incomeResult = await db.rawQuery('''
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM transactions
-      WHERE userId = ? AND type = 'income' AND date >= ? AND date < ?
-    ''', [userId, currentMonth, nextMonth]);
-
-    // Get this month's expense
-    final expenseResult = await db.rawQuery('''
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM transactions
-      WHERE userId = ? AND type = 'expense' AND date >= ? AND date < ?
-    ''', [userId, currentMonth, nextMonth]);
-
-    // Get total income
-    final totalIncomeResult = await db.rawQuery('''
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM transactions
-      WHERE userId = ? AND type = 'income'
-    ''', [userId]);
-
-    // Get total expense
-    final totalExpenseResult = await db.rawQuery('''
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM transactions
-      WHERE userId = ? AND type = 'expense'
-    ''', [userId]);
-
+    // Return mock stats
     return {
-      'monthlyIncome': incomeResult.first['total'] as double? ?? 0.0,
-      'monthlyExpense': expenseResult.first['total'] as double? ?? 0.0,
-      'totalIncome': totalIncomeResult.first['total'] as double? ?? 0.0,
-      'totalExpense': totalExpenseResult.first['total'] as double? ?? 0.0,
+      'monthlyIncome': 1500.0,
+      'monthlyExpense': 700.0,
+      'totalIncome': 3000.0,
+      'totalExpense': 1200.0,
     };
   }
 
@@ -239,41 +168,28 @@ class DatabaseHelper {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    final db = await database;
-    final startDateStr = startDate.toIso8601String();
-    final endDateStr = endDate.toIso8601String();
-
-    final maps = await db.query(
-      'transactions',
-      where: 'userId = ? AND date >= ? AND date <= ?',
-      whereArgs: [userId, startDateStr, endDateStr],
-      orderBy: 'date DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return TransactionModel.fromMap(maps[i]);
-    });
+    // Return mock transactions
+    return getTransactions(userId);
   }
 
   // Get transactions by category
   Future<List<TransactionModel>> getTransactionsByCategory(
     String userId,
     String category,
-    TransactionType type,
   ) async {
-    final db = await database;
-    final typeStr = type == TransactionType.income ? 'income' : 'expense';
+    // Return mock transactions filtered by category
+    final allTransactions = await getTransactions(userId);
+    return allTransactions.where((t) => t.category == category).toList();
+  }
 
-    final maps = await db.query(
-      'transactions',
-      where: 'userId = ? AND category = ? AND type = ?',
-      whereArgs: [userId, category, typeStr],
-      orderBy: 'date DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return TransactionModel.fromMap(maps[i]);
-    });
+  // Get transactions by type
+  Future<List<TransactionModel>> getTransactionsByType(
+    String userId,
+    String type,
+  ) async {
+    // Return mock transactions filtered by type
+    final allTransactions = await getTransactions(userId);
+    return allTransactions.where((t) => t.type == type).toList();
   }
 
   // Search transactions
@@ -281,57 +197,49 @@ class DatabaseHelper {
     String userId,
     String query,
   ) async {
-    final db = await database;
-
-    final maps = await db.query(
-      'transactions',
-      where: 'userId = ? AND (title LIKE ? OR category LIKE ?)',
-      whereArgs: [userId, '%$query%', '%$query%'],
-      orderBy: 'date DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return TransactionModel.fromMap(maps[i]);
-    });
+    // Return mock search results
+    final allTransactions = await getTransactions(userId);
+    return allTransactions
+        .where((t) => t.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   // Get transaction count
   Future<int> getTransactionCount(String userId) async {
-    final db = await database;
-    final result = await db.rawQuery('''
-      SELECT COUNT(*) as count
-      FROM transactions
-      WHERE userId = ?
-    ''', [userId]);
-
-    return Sqflite.firstIntValue(result) ?? 0;
+    // Mock implementation
+    return 5;
   }
 
   // Check if database is empty
   Future<bool> isDatabaseEmpty() async {
-    final db = await database;
-
-    final usersCount = Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM users'),
-        ) ??
-        0;
-
-    final transactionsCount = Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM transactions'),
-        ) ??
-        0;
-
-    final balancesCount = Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM balances'),
-        ) ??
-        0;
-
-    return usersCount == 0 && transactionsCount == 0 && balancesCount == 0;
+    // Mock implementation
+    return false; // Database is not empty
   }
 
   // Close the database
-  Future close() async {
-    final db = await instance.database;
-    db.close();
+  Future<void> close() async {
+    // Mock implementation - do nothing
+  }
+
+  // Get record count
+  Future<int> getRecordCount(String table) async {
+    // Mock implementation
+    return 10;
+  }
+
+  // Get database statistics
+  Future<Map<String, int>> getDatabaseStatistics() async {
+    // Mock implementation
+    return {
+      'users': 5,
+      'transactions': 25,
+      'balances': 5,
+    };
+  }
+
+  // Get batch size
+  int getBatchSize() {
+    // Mock implementation
+    return 100;
   }
 }

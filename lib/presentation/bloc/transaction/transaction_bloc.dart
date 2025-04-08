@@ -15,7 +15,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionBloc({
     required this.getTransactions,
     required this.addTransaction,
-  }) : super(TransactionInitial()) {
+  }) : super(const TransactionInitial()) {
     on<LoadTransactions>(_onLoadTransactions);
     on<AddTransaction>(_onAddTransaction);
     on<UpdateTransaction>(_onUpdateTransaction);
@@ -28,7 +28,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     LoadTransactions event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(TransactionLoading());
+    emit(const TransactionLoading());
     try {
       final transactions = await getTransactions();
       final totalIncome = transactions
@@ -68,13 +68,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
 
       if (result) {
-        emit(TransactionOperationSuccess(
+        emit(const TransactionOperationSuccess(
           operation: TransactionOperation.add,
           message: 'Transaction added successfully',
         ));
-        add(LoadTransactions());
+        add(const LoadTransactions());
       } else {
-        emit(TransactionError('Failed to add transaction'));
+        emit(const TransactionError('Failed to add transaction'));
       }
     } catch (e) {
       emit(TransactionError(e.toString()));

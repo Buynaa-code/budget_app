@@ -1,13 +1,32 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:budget_app/providers/auth_provider.dart';
 import 'package:budget_app/core/localization/locale_provider.dart';
 import 'package:budget_app/core/localization/app_localizations.dart';
-import 'package:budget_app/services/database_helper.dart';
-import 'package:budget_app/models/user.dart';
 import 'edit_profile_screen.dart';
+
+// Mock XFile class for image_picker
+class MockXFile {
+  final String path;
+  MockXFile(this.path);
+}
+
+// Mock ImageSource enum for image_picker
+enum MockImageSource { camera, gallery }
+
+class MockImagePicker {
+  Future<MockXFile?> pickImage({
+    required MockImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) async {
+    // Mock implementation - return null for now
+    return null;
+  }
+}
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,7 +37,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? _imageFile;
-  final ImagePicker _picker = ImagePicker();
+  final MockImagePicker _picker = MockImagePicker();
   bool _isLoading = false;
 
   Future<void> _pickImage() async {
@@ -28,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       // Show a dialog to let the user choose between camera and gallery
-      final source = await showDialog<ImageSource>(
+      final source = await showDialog<MockImageSource>(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF2A2B2E),
@@ -41,13 +60,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 leading: const Icon(Icons.camera_alt, color: Colors.blue),
                 title: const Text('Камераар авах',
                     style: TextStyle(color: Colors.white)),
-                onTap: () => Navigator.pop(context, ImageSource.camera),
+                onTap: () => Navigator.pop(context, MockImageSource.camera),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library, color: Colors.green),
                 title: const Text('Зургийн сангаас сонгох',
                     style: TextStyle(color: Colors.white)),
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
+                onTap: () => Navigator.pop(context, MockImageSource.gallery),
               ),
             ],
           ),
@@ -63,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       // Pick the image
-      final XFile? pickedFile = await _picker.pickImage(
+      final MockXFile? pickedFile = await _picker.pickImage(
         source: source,
         maxWidth: 500,
         maxHeight: 500,
@@ -135,7 +154,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
     final userModel = authProvider.userModel;
 
     return Scaffold(
@@ -285,11 +303,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        user?.email ?? '',
+                        userModel?.email ?? '',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                       if (userModel?.name != null) ...[
@@ -316,10 +333,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // User Info Card
                       Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [
-                              const Color(0xFF2A2B2E),
-                              const Color(0xFF1A1B1E),
+                              Color(0xFF2A2B2E),
+                              Color(0xFF1A1B1E),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -368,7 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                               // User info fields
                               _buildInfoItem(Icons.email_outlined, 'Имэйл',
-                                  user?.email ?? ''),
+                                  userModel?.email ?? ''),
                               if (userModel?.phone != null)
                                 _buildInfoItem(Icons.phone_outlined, 'Утас',
                                     userModel!.phone!),
@@ -410,10 +427,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Settings Card
                       Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [
-                              const Color(0xFF2A2B2E),
-                              const Color(0xFF1A1B1E),
+                              Color(0xFF2A2B2E),
+                              Color(0xFF1A1B1E),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,

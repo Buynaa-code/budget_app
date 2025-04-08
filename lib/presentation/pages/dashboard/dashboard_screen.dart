@@ -5,7 +5,6 @@ import 'package:budget_app/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:budget_app/presentation/bloc/transaction/transaction_event.dart';
 import 'package:budget_app/presentation/bloc/transaction/transaction_state.dart';
 import 'package:budget_app/core/localization/app_localizations.dart';
-import 'package:budget_app/widgets/success_dialog.dart';
 import '../transaction/income_page.dart';
 import '../transaction/expense_page.dart';
 

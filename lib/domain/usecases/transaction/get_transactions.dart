@@ -1,6 +1,5 @@
 import '../../entities/transaction_entity.dart';
 import '../../repositories/transaction_repository.dart';
-import 'package:budget_app/models/transaction.dart';
 
 /// Use case for retrieving all transactions for a user.
 class GetTransactions {

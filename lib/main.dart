@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/routes/app_router.dart';
@@ -10,13 +10,18 @@ import 'core/theme/app_theme.dart';
 import 'di/injection_container.dart' as di;
 import 'core/utils/database_initializer.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
-import 'providers/auth_provider.dart' as app_auth;
+import 'presentation/bloc/transaction/transaction_bloc.dart';
+import 'presentation/bloc/transaction/transaction_event.dart';
+import 'providers/auth_provider.dart';
 import 'providers/balance_provider.dart';
 import 'providers/transaction_provider.dart';
 
 void main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  // await Firebase.initializeApp();
 
   // Initialize the database
   try {
@@ -45,15 +50,16 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (_) => di.sl<AuthBloc>(),
         ),
-        // Add other BLoC providers here
+        BlocProvider<TransactionBloc>(
+          create: (_) => di.sl<TransactionBloc>(),
+        ),
       ],
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
-          Provider<app_auth.AuthProvider>(
-              create: (_) => app_auth.AuthProvider()),
-          Provider<BalanceProvider>(create: (_) => BalanceProvider()),
-          Provider<TransactionProvider>(create: (_) => TransactionProvider()),
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => BalanceProvider()),
+          ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ],
         child: Consumer<LocaleProvider>(builder: (context, localeProvider, _) {
           return MaterialApp(

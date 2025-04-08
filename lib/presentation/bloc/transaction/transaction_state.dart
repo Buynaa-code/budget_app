@@ -54,12 +54,15 @@ class TransactionLoading extends TransactionState {
 
 /// Loaded state with transactions data
 class TransactionLoaded extends TransactionState {
+  @override
   final List<TransactionModel> transactions;
+  @override
   final double totalIncome;
+  @override
   final double totalExpense;
   final double balance;
 
-  TransactionLoaded({
+  const TransactionLoaded({
     required this.transactions,
     required this.totalIncome,
     required this.totalExpense,
@@ -85,7 +88,7 @@ class TransactionOperationSuccess extends TransactionState {
   final TransactionOperation operation;
   final String message;
 
-  TransactionOperationSuccess({
+  const TransactionOperationSuccess({
     required this.operation,
     required this.message,
   }) : super();
@@ -98,7 +101,7 @@ class TransactionOperationSuccess extends TransactionState {
 class TransactionError extends TransactionState {
   final String message;
 
-  TransactionError(this.message) : super(error: message);
+  const TransactionError(this.message) : super(error: message);
 
   @override
   List<Object?> get props => [message];

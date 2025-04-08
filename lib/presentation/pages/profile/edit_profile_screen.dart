@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       final authProvider =
           Provider.of<app_auth.AuthProvider>(context, listen: false);
-      if (authProvider.user != null && authProvider.userModel != null) {
+      if (authProvider.userModel != null) {
         final userModel = authProvider.userModel!;
 
         final updatedUser = userModel.copyWith(
